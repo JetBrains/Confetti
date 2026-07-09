@@ -3,6 +3,8 @@
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
+    val kotlin_repo_url: String? by settings
+
     listOf(repositories, dependencyResolutionManagement.repositories).forEach {
         it.apply {
             google {
@@ -19,6 +21,8 @@ pluginManagement {
                     includeVersionByRegex("com.apollographql.execution", ".*", ".*SNAPSHOT.*")
                 }
             }
+
+            kotlin_repo_url?.also { maven(it) }
         }
     }
 
@@ -27,6 +31,18 @@ pluginManagement {
             when (requested.id.id) {
                 // Appengine plugin doesn't publish the marker
                 "com.google.cloud.tools.appengine" -> useModule("com.google.cloud.tools:appengine-gradle-plugin:${requested.version}")
+            }
+        }
+    }
+}
+
+dependencyResolutionManagement {
+    val kotlin_version: String? by settings
+
+    versionCatalogs {
+        create("libs") {
+            kotlin_version?.let {
+                version("kotlin", it)
             }
         }
     }
